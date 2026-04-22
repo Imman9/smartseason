@@ -1,0 +1,93 @@
+// src/controllers/field.controller.ts
+import { Request, Response } from "express";
+import { Field } from "../models/Field";
+import { User } from "../models/User";
+import { AuthRequest } from "../middleware/auth.middleware";
+
+// 🧑‍💼 Admin: Create Field
+export const createField = async (req: AuthRequest, res: Response) => {
+  try {
+    const { name, cropType, plantingDate } = req.body;
+
+    const field = await Field.create({
+      name,
+      cropType,
+      plantingDate,
+    });
+
+    return res.status(201).json(field);
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to create field", error });
+  }
+};
+
+//  Admin: Assign Agent
+export const assignField = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { agentId } = req.body;
+
+    const field = await Field.findByPk(typeof id === "string" ? id : id[0]);
+    if (!field) {
+      return res.status(404).json({ message: "Field not found" });
+    }
+
+    const agent = await User.findByPk(agentId);
+    if (!agent || agent.role !== "AGENT") {
+      return res.status(400).json({ message: "Invalid agent" });
+    }
+
+    field.assignedAgentId = agentId;
+    await field.save();
+
+    return res.json(field);
+  } catch (error) {
+    return res.status(500).json({ message: "Assignment failed", error });
+  }
+};
+
+// 👨‍🌾 + 🧑‍💼: Get Fields
+export const getFields = async (req: AuthRequest, res: Response) => {
+  try {
+    let fields;
+
+    if (req.user.role === "ADMIN") {
+      fields = await Field.findAll({
+        include: [{ model: User, as: "agent", attributes: ["id", "name"] }],
+      });
+    } else {
+      fields = await Field.findAll({
+        where: { assignedAgentId: req.user.id },
+        include: [{ model: User, as: "agent", attributes: ["id", "name"] }],
+      });
+    }
+
+    return res.json(fields);
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to fetch fields", error });
+  }
+};
+
+//  Get Single Field
+export const getFieldById = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const field = await Field.findByPk(typeof id === "string" ? id : id[0], {
+      include: [{ model: User, as: "agent", attributes: ["id", "name"] }],
+    });
+
+    if (!field) {
+      return res.status(404).json({ message: "Field not found" });
+    }
+
+    // 🔒 Agents can only access their own fields
+    if (req.user.role === "AGENT" && field.assignedAgentId !== req.user.id) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    return res.json(field);
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to fetch field", error });
+  }
+};
