@@ -89,11 +89,7 @@ export default function LoginPage() {
         </p>
 
         {/* Demo credentials */}
-        <div className="mt-6 p-3 bg-gray-50 rounded-lg border border-gray-100">
-          <p className="text-xs font-medium text-gray-600 mb-1">Demo credentials</p>
-          <p className="text-xs text-gray-500">Admin: admin@smartseason.dev / admin123</p>
-          <p className="text-xs text-gray-500">Agent: agent1@smartseason.dev / agent123</p>
-        </div>
+       
       </div>
     </div>
   )

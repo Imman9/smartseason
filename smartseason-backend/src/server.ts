@@ -17,7 +17,16 @@ dotenv.config();
 const app = express();
 
 //middleware
-app.use(cors({origin: "https://smartseason-pme5.vercel.app/"}));
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://smartseason-pme5.vercel.app",
+  process.env.FRONTEND_URL
+].filter(Boolean) as string[];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true
+}));
 app.use(express.json());
 
 //routes
