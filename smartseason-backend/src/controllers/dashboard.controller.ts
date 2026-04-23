@@ -11,10 +11,13 @@ export const getDashboard = async (req: AuthRequest, res: Response) => {
     let fields;
 
     if (req.user.role === "ADMIN") {
-      fields = await Field.findAll();
+      fields = await Field.findAll({
+        include: [{ model: User, as: "agent", attributes: ["id", "name"] }],
+      });
     } else {
       fields = await Field.findAll({
         where: { assignedAgentId: req.user.id },
+        include: [{ model: User, as: "agent", attributes: ["id", "name"] }],
       });
     }
 
@@ -23,12 +26,12 @@ export const getDashboard = async (req: AuthRequest, res: Response) => {
     let atRisk = 0;
     let completed = 0;
 
-    fields.forEach((field) => {
+    const fieldsWithStatus = fields.map((field) => {
       const status = computeStatus(field);
-
       if (status === "ACTIVE") active++;
       if (status === "AT_RISK") atRisk++;
       if (status === "COMPLETED") completed++;
+      return { ...field.toJSON(), status };
     });
 
     // 📝 Recent updates
@@ -48,6 +51,7 @@ export const getDashboard = async (req: AuthRequest, res: Response) => {
         atRisk,
         completed,
       },
+      fields: fieldsWithStatus,
       recentUpdates: updates,
     });
   } catch (error) {

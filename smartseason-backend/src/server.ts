@@ -26,7 +26,7 @@ app.use("/api/fields", fieldUpdateRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
 //health check
-app.get("health", (req, res) => {
+app.get("/health", (req, res) => {
   res.json({ status: "OK", message: "SmartSeason API running" });
 });
 

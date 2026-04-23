@@ -21,27 +21,30 @@ export const createField = async (req: AuthRequest, res: Response) => {
   }
 };
 
-//  Admin: Assign Agent
+//  Admin: Assign / Unassign Agent
 export const assignField = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
-    const { agentId } = req.body;
+    const { agentId } = req.body;  // null means unassign
 
     const field = await Field.findByPk(typeof id === "string" ? id : id[0]);
     if (!field) {
       return res.status(404).json({ message: "Field not found" });
     }
 
-    const agent = await User.findByPk(agentId);
-    if (!agent || agent.role !== "AGENT") {
-      return res.status(400).json({ message: "Invalid agent" });
+    if (agentId !== null && agentId !== undefined) {
+      const agent = await User.findByPk(agentId);
+      if (!agent || agent.role !== "AGENT") {
+        return res.status(400).json({ message: "Invalid agent" });
+      }
     }
 
-    field.assignedAgentId = agentId;
+    field.assignedAgentId = agentId ?? null;
     await field.save();
 
     return res.json(field);
   } catch (error) {
+    console.error("assignField error:", error);
     return res.status(500).json({ message: "Assignment failed", error });
   }
 };
@@ -89,5 +92,18 @@ export const getFieldById = async (req: AuthRequest, res: Response) => {
     return res.json(field);
   } catch (error) {
     return res.status(500).json({ message: "Failed to fetch field", error });
+  }
+};
+
+// 🧑‍💼 Admin: List all agents
+export const getAgents = async (req: AuthRequest, res: Response) => {
+  try {
+    const agents = await User.findAll({
+      where: { role: "AGENT" },
+      attributes: ["id", "name", "email"],
+    });
+    return res.json(agents);
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to fetch agents", error });
   }
 };

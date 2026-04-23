@@ -14,7 +14,7 @@ export class Field extends Model {
   public cropType!: string;
   public plantingDate!: Date;
   public currentStage!: FieldStage;
-  public assignedAgentId!: number;
+  public assignedAgentId!: number | null;
 }
 
 Field.init(
