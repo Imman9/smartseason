@@ -5,7 +5,7 @@ import { User } from "../models/User";
 import { AuthRequest } from "../middleware/auth.middleware";
 import { computeStatus } from "../utils/status";
 
-// 🧠 Core aggregation logic
+// Core aggregation logic
 export const getDashboard = async (req: AuthRequest, res: Response) => {
   try {
     let fields;
@@ -34,7 +34,7 @@ export const getDashboard = async (req: AuthRequest, res: Response) => {
       return { ...field.toJSON(), status };
     });
 
-    // 📝 Recent updates
+    // Recent updates
     const updates = await FieldUpdate.findAll({
       order: [["createdAt", "DESC"]],
       limit: 5,
