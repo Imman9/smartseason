@@ -1,22 +1,24 @@
-// src/controllers/field.controller.ts
+
 import { Request, Response } from "express";
 import { Field } from "../models/Field";
 import { User } from "../models/User";
 import { AuthRequest } from "../middleware/auth.middleware";
 
-// 🧑‍💼 Admin: Create Field
+//  Admin: Create Field
 export const createField = async (req: AuthRequest, res: Response) => {
   try {
-    const { name, cropType, plantingDate } = req.body;
+    const { name, cropType, plantingDate, assignedAgentId } = req.body;
 
     const field = await Field.create({
       name,
       cropType,
       plantingDate,
+      assignedAgentId: assignedAgentId || null,
     });
 
     return res.status(201).json(field);
   } catch (error) {
+    console.error("createField error:", error);
     return res.status(500).json({ message: "Failed to create field", error });
   }
 };
@@ -49,7 +51,7 @@ export const assignField = async (req: AuthRequest, res: Response) => {
   }
 };
 
-// 👨‍🌾 + 🧑‍💼: Get Fields
+// Get Fields
 export const getFields = async (req: AuthRequest, res: Response) => {
   try {
     let fields;
@@ -84,7 +86,7 @@ export const getFieldById = async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ message: "Field not found" });
     }
 
-    // 🔒 Agents can only access their own fields
+    //  Agents can only access their own fields
     if (req.user.role === "AGENT" && field.assignedAgentId !== req.user.id) {
       return res.status(403).json({ message: "Forbidden" });
     }
@@ -95,7 +97,7 @@ export const getFieldById = async (req: AuthRequest, res: Response) => {
   }
 };
 
-// 🧑‍💼 Admin: List all agents
+//  Admin: List all agents
 export const getAgents = async (req: AuthRequest, res: Response) => {
   try {
     const agents = await User.findAll({

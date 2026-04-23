@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
-import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import StatusBadge from '../components/StatusBadge'
 import Modal from '../components/Modal'
@@ -120,9 +119,7 @@ export default function AdminFields() {
                       </select>
                     </td>
                     <td className="px-5 py-3">
-                      <Link to={`/fields/${f.id}`} className="text-sm text-gray-400 hover:text-gray-700 transition-colors">
-                        Open
-                      </Link>
+                      {/* Detail view not implemented yet */}
                     </td>
                   </tr>
                 )

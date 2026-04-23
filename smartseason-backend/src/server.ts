@@ -7,6 +7,7 @@ import fieldUpdateRoutes from "./routes/fieldUpdate.routes";
 import dashboardRoutes from "./routes/dashboard.routes";
 
 import { sequelize } from "./config/database";
+import { fixFieldsFk } from "./migrations/fixFieldsFk";
 
 //importing models
 import "./models";
@@ -42,6 +43,9 @@ const startServer = async () => {
     // auto-create tables
     await sequelize.sync({ alter: true });
     console.log(" Database synced");
+
+    // Fix broken FK if present
+    await fixFieldsFk(sequelize.getQueryInterface());
 
     // Start server
     app.listen(PORT, () => {

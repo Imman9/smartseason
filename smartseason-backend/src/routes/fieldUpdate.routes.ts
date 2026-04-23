@@ -10,13 +10,12 @@ import { authorize } from "../middleware/role.middleware";
 
 const router = Router();
 
-// 👨‍🌾 Agent updates
+//  Agent updates
 router.post("/:id/update", authenticate, authorize(["AGENT"]), updateField);
 
-// 👨‍🌾 + 🧑‍💼
 router.get("/:id/updates", authenticate, getFieldUpdates);
 
-// 🧑‍💼 Admin only
+//  Admin only
 router.get("/updates/all", authenticate, authorize(["ADMIN"]), getAllUpdates);
 
 export default router;
