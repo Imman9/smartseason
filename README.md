@@ -9,6 +9,8 @@ A full-stack web application for tracking crop progress across multiple fields d
 > **URL:** `https://smartseason-pme5.vercel.app/`
 > 
 > **Demo credentials:**
+> ADMIN :admin@smartseason.dev /admin123
+> AGENT :agent@smartseason.dev / agent123
 
 
 ---
