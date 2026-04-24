@@ -2,12 +2,8 @@ import bcrypt from "bcryptjs";
 import { User, UserRole } from "../models/User";
 import { sequelize } from "../config/database";
 
-const seed = async () => {
+export const seedUsers = async () => {
   try {
-    // Sync database
-    await sequelize.authenticate();
-    console.log("Connected to database.");
-
     const users = [
       {
         name: "Admin User",
@@ -24,26 +20,39 @@ const seed = async () => {
     ];
 
     for (const userData of users) {
-      const existingUser = await User.findOne({ where: { email: userData.email } });
-      if (existingUser) {
-        console.log(`User ${userData.email} already exists. Skipping...`);
-        continue;
-      }
-
       const hashedPassword = await bcrypt.hash(userData.password, 10);
-      await User.create({
-        ...userData,
-        password: hashedPassword,
+      const [user, created] = await User.findOrCreate({
+        where: { email: userData.email },
+        defaults: {
+          ...userData,
+          password: hashedPassword,
+        },
       });
-      console.log(`User ${userData.email} created successfully.`);
+
+      if (!created) {
+        // If user already exists, update their password and role to match demo credentials
+        await user.update({
+          password: hashedPassword,
+          role: userData.role,
+          name: userData.name,
+        });
+        console.log(`User ${userData.email} updated successfully.`);
+      } else {
+        console.log(`User ${userData.email} created successfully.`);
+      }
     }
 
     console.log("Seeding completed.");
-    process.exit(0);
   } catch (error) {
     console.error("Seeding failed:", error);
-    process.exit(1);
+    throw error;
   }
 };
 
-seed();
+// If run directly
+if (require.main === module) {
+  sequelize.authenticate()
+    .then(() => seedUsers())
+    .then(() => process.exit(0))
+    .catch(() => process.exit(1));
+}

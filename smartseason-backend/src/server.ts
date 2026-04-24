@@ -8,6 +8,7 @@ import dashboardRoutes from "./routes/dashboard.routes";
 
 import { sequelize } from "./config/database";
 import { fixFieldsFk } from "./migrations/fixFieldsFk";
+import { seedUsers } from "./scripts/seed";
 
 //importing models
 import "./models";
@@ -55,6 +56,9 @@ const startServer = async () => {
 
     // Fix broken FK if present
     await fixFieldsFk(sequelize.getQueryInterface());
+
+    // Seed demo users
+    await seedUsers();
 
     // Start server
     app.listen(PORT, () => {
