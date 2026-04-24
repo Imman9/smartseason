@@ -89,7 +89,31 @@ export default function LoginPage() {
         </p>
 
         {/* Demo credentials */}
-       
+        <div className="mt-8 pt-6 border-t border-gray-100">
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Demo Credentials</p>
+          <div className="space-y-2">
+            <div 
+              onClick={() => { setEmail('admin@smartseason.dev'); setPassword('admin123'); }}
+              className="group cursor-pointer p-2 rounded-lg hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-200"
+            >
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-medium text-gray-700">Admin</span>
+                <span className="text-[10px] text-gray-400 group-hover:text-gray-900 transition-colors">Click to fill</span>
+              </div>
+              <p className="text-xs text-gray-500">admin@smartseason.dev / admin123</p>
+            </div>
+            <div 
+              onClick={() => { setEmail('agent@smartseason.dev'); setPassword('agent123'); }}
+              className="group cursor-pointer p-2 rounded-lg hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-200"
+            >
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-medium text-gray-700">Field Agent</span>
+                <span className="text-[10px] text-gray-400 group-hover:text-gray-900 transition-colors">Click to fill</span>
+              </div>
+              <p className="text-xs text-gray-500">agent@smartseason.dev / agent123</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
